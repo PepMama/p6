@@ -3,11 +3,15 @@ import mongoose from "mongoose";
 import cors from "cors";
 import * as dotEnv from "dotenv";
 import userRoutes from "./routes/user.js";
-
-
+import sauceRoutes from "./routes/sauces.js";
+import path from "path";
+import {fileURLToPath} from 'url';
+import auth from "./middleware/auth.js";
 
 dotEnv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 await mongoose.connect(process.env.MONGO_URI,
 { useNewUrlParser: true,
@@ -19,4 +23,7 @@ const app = Express();
 app.use(Express.json());
 app.use(cors());
 app.use('/api/auth', userRoutes);
+app.use('/images', Express.static(path.join(__dirname, 'images')));
+app.use('/api/sauces', auth, sauceRoutes);
+
 app.listen(process.env.PORT || 3000); //process.env.PORT : si la plateforme de déploiement propose un port par défaut

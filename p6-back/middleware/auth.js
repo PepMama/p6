@@ -1,10 +1,10 @@
-import token from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
     // récupérer le token
     try {
         const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decodedToken.userId;
         req.auth = {
             userId: userId
@@ -14,5 +14,4 @@ module.exports = (req, res, next) => {
         console.error(error);
         res.status(401).json({ error });
     }
-    
 };
