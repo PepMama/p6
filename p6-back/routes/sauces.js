@@ -8,6 +8,9 @@ const router = express.Router();
 
 // router.post('/', multer, sauceCtrl.createThing);
 router.get('/', sauceCtrl.listeSauces);
+router.get('/:id', sauceCtrl.displaySauce);
 router.post('/', multer, sauceCtrl.createSauce);
+router.put('/:id',  sauceCtrl.modifierSauce);
+router.delete('/:id', sauceCtrl.deleteSauce);
 
 export default router;

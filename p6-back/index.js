@@ -25,5 +25,6 @@ app.use(cors());
 app.use('/api/auth', userRoutes);
 app.use('/images', Express.static(path.join(__dirname, 'images')));
 app.use('/api/sauces', auth, sauceRoutes);
+app.use('/api/sauces/', sauceRoutes);
 
 app.listen(process.env.PORT || 3000); //process.env.PORT : si la plateforme de déploiement propose un port par défaut
