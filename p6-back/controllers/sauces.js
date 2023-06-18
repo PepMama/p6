@@ -1,11 +1,19 @@
 import { json } from "express";
 import Sauce from "../models/sauces.js";
 
+function normalizer(sauce, req){
+    return {
+        ...sauce, 
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${sauce.imageName}`
+    }
+}
+
 export async function listeSauces(req, res, next){
     // res.status(200).json([])
     try {
-        const sauce = await Sauce.find();
-        res.status(200).json(sauce);
+        const sauces = await Sauce.find();
+        const normalizerSauces = sauces.map(sauce => normalizer(sauce.toObject(), req));
+        res.status(200).json(normalizerSauces);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error });
@@ -40,7 +48,8 @@ export async function displaySauce(req, res){
         const afficherSauce = await Sauce.findOne({
             _id: req.params.id
         });
-        res.status(201).json(afficherSauce);
+        const normalizerSauce = normalizer(afficherSauce.toObject(), req);
+        res.status(200).json(normalizerSauce);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error });  
@@ -49,7 +58,7 @@ export async function displaySauce(req, res){
 
 export async function deleteSauce(req, res){
     try {
-        const sauceDelete = await Sauce.deleteOne({
+        await Sauce.deleteOne({
             _id: req.params.id
         });
         
@@ -62,12 +71,28 @@ export async function deleteSauce(req, res){
 
 export async function modifierSauce(req, res){
     try {
-        const modifSauce = await Sauce.updateOne(
+        await Sauce.updateOne(
             { _id: req.params.id },
             { ...req.body, _id: req.params.id }
         );
     
         res.status(200).json({ message: 'Sauce modifiée !' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error });
+    }
+}
+
+
+export async function likeSauce(req, res){
+    try {
+        const sauce = await Sauce.findOne(
+            {_id: req.params.id}
+        ); 
+        const userId = req.auth.userId;
+        sauce.usersLiked.push(userId);
+        await sauce.save();
+        res.status(200).json({ message: 'Sauce Likée !' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error });
