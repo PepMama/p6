@@ -1,5 +1,6 @@
 import { json } from "express";
 import Sauce from "../models/sauces.js";
+import fs from "fs";
 
 function normalizer(sauce, req){
     return {
@@ -63,16 +64,15 @@ export async function deleteSauce(req, res){
         const sauce = await Sauce.findOne(
             {_id: req.params.id}
         ); 
-
         if(userId !== sauce.userId){
-            return res.status(401).json({ message : "Minterdiction de supprimer la sauce !" });
+            return res.status(401).json({ message : "Interdiction de supprimer la sauce !" });
+        }else {
+            fs.unlinkSync(`images/${sauce.imageName}`);
+            await Sauce.deleteOne({
+                _id: req.params.id
+            });
+            res.status(201).json({ message: 'Sauce supprimée !' });
         }
-
-        await Sauce.deleteOne({
-            _id: req.params.id
-        });
-
-        res.status(201).json({ message: 'Sauce supprimée !' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error });
@@ -90,9 +90,16 @@ export async function modifierSauce(req, res){
             return res.status(401).json({ message : "Interdiction de maudifier la sauce !" });
         }
 
+        if (req.file) {
+            fs.unlinkSync(`images/${sauce.imageName}`);
+        }
+
+        const body = req.file ?
+            {...JSON.parse(req.body.sauce), imageName: req.file.filename}:
+            req.body;
         await Sauce.updateOne(
             { _id: req.params.id },
-            { ...req.body, _id: req.params.id }
+            { ...body, _id: req.params.id }
         );
     
         res.status(200).json({ message: 'Sauce modifiée !' });

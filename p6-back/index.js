@@ -1,6 +1,7 @@
 import Express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import helmet from "helmet";
 import * as dotEnv from "dotenv";
 import userRoutes from "./routes/user.js";
 import sauceRoutes from "./routes/sauces.js";
@@ -21,6 +22,7 @@ await mongoose.connect(process.env.MONGO_URI,
 const app = Express();
 
 app.use(Express.json());
+app.use(helmet());
 app.use(cors());
 app.use('/api/auth', userRoutes);
 app.use('/images', Express.static(path.join(__dirname, 'images')));

@@ -3,7 +3,8 @@ import multer from "multer";
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpg',
-    'image/png': 'png'
+    'image/png': 'png',
+    'image/webp': 'webp'
 };
 
 const storage = multer.diskStorage({ // configure le chemin et le nom de fichier pour les fichiers entrants
