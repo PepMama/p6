@@ -9,7 +9,7 @@ MONGO_URI = mongodb+srv://[uri du serveur mongo]
 Lancer le back : 
 ```shell
 npm install
-nodemon run start
+npm run start
 ```
 
 [Lancer le front](p6-front/README.md)
